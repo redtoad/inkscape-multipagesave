@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Export layers to multiple PDFs</_name>
-    <id>com.github.redtoad.inkscape_multipage</id>
-    <effect>
+    <_name>Export layers to multiple PDFs...</_name>
+    <id>com.github.redtoad.inkscape-multipagesave</id>
+
+    <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
+
+    <!--
+    <param name="tab" type="notebook">
+        <page name="Options" _gui-text="Options">
+    -->
+    <param name="directory" type="string" _gui-text="Directory path to export:">~/</param>
+    <param name="hide-locked-layers" type="bool" _gui-text="Hide locked layers">false</param>
+    <!--
+        </page>
+        <page name="Help" _gui-text="Help">
+            <_param name="about" type="description">All sliced images, and optionally - code, will be generated as you had configured and saved to one directory.</_param>
+        </page>
+    </param>
+    -->
+
+    <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="Export"/>
         </effects-menu>
     </effect>
+
     <script>
         <command location="inx" interpreter="python">multipagesave.py</command>
     </script>
+
 </inkscape-extension>

@@ -1,4 +1,27 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+
+
+from multipagesave import Layer, MultipageSave
+
+def test_find_layers():
+
+   ext = MultipageSave()
+   ext.options.ids = []  # overwrite parser args
+   ext.load(TEST_SVG)  # load test SVG document
+
+   layers = ext.find_layers()
+
+   assert len(layers) == 3
+
+   assert layers["layer1"].label == "layer 1 (locked)"
+   assert layers["layer1"].locked == True
+   assert layers["layer2"].label == "layer 2"
+   assert layers["layer2"].locked == False
+   assert layers["layer3"].label == "layer 3"
+   assert layers["layer3"].locked == False
+
+
+TEST_SVG = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
@@ -84,3 +107,4 @@
          y="206.08427">Page 3</tspan></text>
   </g>
 </svg>
+""".encode("utf-8")

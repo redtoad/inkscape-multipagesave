@@ -16,12 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+"""
+
 import collections
 import os
 import tempfile
 
 import inkex
-
+from lxml import etree
 
 class InkscapeLayer(object):
 
@@ -67,7 +70,7 @@ class InkscapeLayer(object):
         self.visible = True
 
 
-class MultipageSave(inkex.Effect):
+class MultipageSave(inkex.EffectExtension):
 
     def effect(self):
         """Apply some effects on the document. Extensions subclassing Effect
@@ -81,21 +84,21 @@ class MultipageSave(inkex.Effect):
             tmp_pdf = os.path.abspath("page_%i.pdf" % no)
 
             with open(tmp_svg, 'w') as fp:
-                fp.write(inkex.etree.tostring(self.document.getroot()))
+                root = self.document.getroot()
+                fp.write(etree.tostring(root).decode('utf-8'))
                 fp.close()
-                cmd = 'inkscape -f "{0}" -A "{1}"'.format(tmp_svg, tmp_pdf)
-                print(cmd)
+                cmd = 'inkscape --export-filename="{1}" "{0}"'.format(tmp_svg, tmp_pdf)
+                #print(cmd)
                 os.system(cmd)
 
     def find_layers(self):
         layers = collections.OrderedDict([
             (layer.id, layer) for layer in InkscapeLayer.from_document(self.document)
         ])
-        for layer in layers.values():
-            print("[{1}] {0}".format(layer, "x" if layer.visible else " "))
+        #for layer in layers.values():
+        #    print("[{1}] {0}".format(layer, "x" if layer.visible else " "))
         return layers.values()
 
 
 if __name__ == '__main__':  # pragma: no cover
-    e = MultipageSave()
-    e.affect()
+    MultipageSave().run()

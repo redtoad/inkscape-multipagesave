@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Export layers to multiple PDFs</_name>
+    <id>com.github.redtoad.inkscape_multipage</id>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="Export"/>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">multipagesave.py</command>
+    </script>
+</inkscape-extension>

@@ -84,27 +84,27 @@ class MultipageSave(inkex.EffectExtension):
         self._root = None
 
     def add_arguments(self, pars):
+        pars.add_argument("--tab")  # catch parameter from GUI tabs
         pars.add_argument("--directory", type=str, dest="directory", help="Directory where PDFs are stored.")
-        pars.add_argument("--hide-locked-layers", type=inkex.Boolean, dest="hide_locked_layers", help="Hide locked layers during rendering.")
+        pars.add_argument("--ignore-locked-layers", type=inkex.Boolean, dest="hide_locked_layers", help="Hide locked layers during rendering.")
 
     def effect(self):
 
-        #self.debug(self.options)
-
         layers = self.find_layers().values()
 
-        #inkex.errormsg(f"--directory={self.options.directory} --hide-locked-layers={self.options.hide_locked_layers}")
-        #inkex.errormsg("\n".join("[{1}] {0}".format(layer, "x" if layer.visible else " ") for layer in layers))
-        #inkex.errormsg(f"--directory={self.options.directory} --hide-locked-layers={self.options.hide_locked_layers}")
-
-        for no, layer in enumerate(layers, start=1):
-
-            for l in layers:
-                #self.debug(f"Hide layer {l.label}: {l.root.attrib}")
+        # Hide all layers ONLY if they are not locked or this is 
+        # explicitly allowed. This way we will be able to show e.g.
+        # a common background.
+        for l in layers:
+            if l.locked and self.options.hide_locked_layers:
                 l.hide()
-            
+
+        pages = [l for l in layers if not l.locked]
+        for no, layer in enumerate(pages, start=1):
+
+            for l in pages:
+                l.hide()
             layer.show()
-            #self.debug(f"Hide layer {no}: {l.root.attrib}")
 
             tmp_svg = os.path.abspath(tempfile.mktemp("page_%i.svg" % no))
             tmp_pdf = os.path.abspath(os.path.expanduser(os.path.join(self.options.directory, "page_%i.pdf" % no)))
@@ -120,8 +120,6 @@ class MultipageSave(inkex.EffectExtension):
         layers = collections.OrderedDict([
             (layer.id, layer) for layer in Layer.from_document(self._root)
         ])
-        #for layer in layers.values():
-        #    self.debug("[{1}] {0}".format(layer, "x" if layer.visible else " "))
         return layers
 
 

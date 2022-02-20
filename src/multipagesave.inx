@@ -5,19 +5,25 @@
 
     <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
 
-    <!--
     <param name="tab" type="notebook">
         <page name="Options" _gui-text="Options">
-    -->
-    <param name="directory" type="string" _gui-text="Directory path to export:">~/</param>
-    <param name="hide-locked-layers" type="bool" _gui-text="Hide locked layers">false</param>
-    <!--
+            <param name="directory" type="string" _gui-text="Directory path to export:">~/</param>
+            <param name="ignore-locked-layers" type="bool" _gui-text="Hide locked layers">false</param>
         </page>
         <page name="Help" _gui-text="Help">
-            <_param name="about" type="description">All sliced images, and optionally - code, will be generated as you had configured and saved to one directory.</_param>
+            <_param name="about" type="description">
+                All layers will be rendered separately in a PDF which is stored in the
+                specified directory.<br/>
+                If you want to use, for instance, a common background, simply lock the 
+                layers which should stay visible in all pages. Note that layers which 
+                are both hidden and locked will remain hidden! 
+            </_param>
+        </page>
+        <page name="about" gui-text="About">
+            <param name="about_text" type="description">This extension will exports layers to multiple PDF files individually.</param>
+            <param name="homepage" type="description">github.com/redtoad/inkscape-multipagesave</param>
         </page>
     </param>
-    -->
 
     <effect needs-live-preview="false">
         <object-type>all</object-type>

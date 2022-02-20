@@ -23,6 +23,7 @@ for each layer. This works by showing just one layer after the other
 """
 
 import collections
+import copy
 import os
 import tempfile
 
@@ -66,16 +67,21 @@ class Layer(object):
             yield Layer(layer)
 
     def hide(self):
-        self.root.set("style", "display:none")
+        self.root.set("style", "display:none;")
+        #self.root.attrib["style"] = "display:none"
         self.visible = False
 
     def show(self):
         # TODO Don't overwrite existing style!
-        self.root.set("style", "")
+        self.root.attrib["style"] = ""
         self.visible = True
 
 
 class MultipageSave(inkex.EffectExtension):
+
+    def __init__(self):
+        super().__init__()
+        self._root = None
 
     def add_arguments(self, pars):
         pars.add_argument("--directory", type=str, dest="directory", help="Directory where PDFs are stored.")
@@ -92,22 +98,27 @@ class MultipageSave(inkex.EffectExtension):
         #inkex.errormsg(f"--directory={self.options.directory} --hide-locked-layers={self.options.hide_locked_layers}")
 
         for no, layer in enumerate(layers, start=1):
-            map(lambda l: l.hide(), layers)
+
+            for l in layers:
+                #self.debug(f"Hide layer {l.label}: {l.root.attrib}")
+                l.hide()
+            
             layer.show()
+            #self.debug(f"Hide layer {no}: {l.root.attrib}")
 
             tmp_svg = os.path.abspath(tempfile.mktemp("page_%i.svg" % no))
             tmp_pdf = os.path.abspath(os.path.expanduser(os.path.join(self.options.directory, "page_%i.pdf" % no)))
 
             with open(tmp_svg, 'w') as fp:
-                root = self.document.getroot()
-                fp.write(etree.tostring(root).decode('utf-8'))
+                fp.write(etree.tostring(self._root).decode('utf-8'))
                 fp.close()
                 #self.debug(f"{tmp_svg} -> {tmp_pdf}")
                 inkscape(tmp_svg, export_filename=tmp_pdf)
 
     def find_layers(self):
+        self._root = copy.deepcopy(self.svg)
         layers = collections.OrderedDict([
-            (layer.id, layer) for layer in Layer.from_document(self.svg)
+            (layer.id, layer) for layer in Layer.from_document(self._root)
         ])
         #for layer in layers.values():
         #    self.debug("[{1}] {0}".format(layer, "x" if layer.visible else " "))

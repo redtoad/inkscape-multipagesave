@@ -1,2 +1,7 @@
 
-src/inkex.py
+.idea/
+__pycache__
+*pyc
+
+inspiration/
+*.pdf
